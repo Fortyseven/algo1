@@ -58,9 +58,9 @@ public class Deque<Item> implements Iterable<Item>
     }
 
     // insert the item at the front
-    public void addFirst(Item item)
+    public void addFirst( Item item )
     {
-        if (item == null) {
+        if ( item == null ) {
             throw new NullPointerException();
         }
 
@@ -73,7 +73,7 @@ public class Deque<Item> implements Iterable<Item>
 
         _first = n;
 
-        if (_count == 0) {
+        if ( _count == 0 ) {
             _last = n;
         }
 
@@ -81,9 +81,9 @@ public class Deque<Item> implements Iterable<Item>
     }
 
     // insert the item at the end
-    public void addLast(Item item)
+    public void addLast( Item item )
     {
-        if (item == null) {
+        if ( item == null ) {
             throw new NullPointerException();
         }
 
@@ -92,7 +92,7 @@ public class Deque<Item> implements Iterable<Item>
         n.next = null;
         n.prev = _last;
 
-        if (_count == 0) {
+        if ( _count == 0 ) {
             _first = n;
         }
         else {
@@ -107,14 +107,14 @@ public class Deque<Item> implements Iterable<Item>
     // delete and return the item at the front
     public Item removeFirst()
     {
-        if (_first == null) {
+        if ( _first == null ) {
             throw new java.util.NoSuchElementException();
         }
         _count--;
         Node n = _first;
         _first = _first.next;
 
-        if (_count == 0) {
+        if ( _count == 0 ) {
             _last = null;
         }
         return n.item;
@@ -123,17 +123,17 @@ public class Deque<Item> implements Iterable<Item>
     // delete and return the item at the end
     public Item removeLast()
     {
-        if (_last == null) {
+        if ( _last == null ) {
             throw new java.util.NoSuchElementException();
         }
         _count--;
         Node n = _last;
         _last = _last.prev;
-        if (_last != null) {
+        if ( _last != null ) {
             _last.next = null;
         }
 
-        if (_count == 0) {
+        if ( _count == 0 ) {
             _first = null;
         }
         return n.item;
@@ -149,15 +149,15 @@ public class Deque<Item> implements Iterable<Item>
     public String toString()
     {
         String out = "Deque{" +
-                     "\n _first = " + (_first == null ? "null" : _first.item) +
-                     "\n _last = " + (_last == null ? "null" : _last.item) +
+                     "\n _first = " + ( _first == null ? "null" : _first.item ) +
+                     "\n _last = " + ( _last == null ? "null" : _last.item ) +
                      "\n _count = " + _count +
                      "\n}";
 
         Node n = _first;
-        while (n != null) {
-            out += "<THIS: " + n.hashCode() + "\t\t - PREV: " + ((n.prev == null) ? "null" : n.prev.hashCode()) + "\t  NEXT: " + ((n.next == null) ? "null" : n.next
-                .hashCode()) + "\t - ITEM: " + n.item + ">\n";
+        while ( n != null ) {
+            out += "<THIS: " + n.hashCode() + "\t\t - PREV: " + ( ( n.prev == null ) ? "null" : n.prev.hashCode() ) + "\t  NEXT: " + ( ( n.next == null ) ? "null" : n.next
+                                                                                                                                                                             .hashCode() ) + "\t - ITEM: " + n.item + ">\n";
             n = n.next;
         }
 
@@ -166,17 +166,17 @@ public class Deque<Item> implements Iterable<Item>
 
     ///////////////////////////////////////////////////
     // unit testing
-    public static void main(String[] args)
+    public static void main( String[] args )
     {
         Deque<String> deck = new Deque<String>();
-        StdOut.println(deck.toString());
+        StdOut.println( deck.toString() );
 
-        deck.addLast("Zero");
-        deck.addLast("One");
-        deck.addLast("Two");
-        deck.addFirst("Alpha");
-        deck.addFirst("Beta");
-        deck.addLast("Three");
+        deck.addLast( "Zero" );
+        deck.addLast( "One" );
+        deck.addLast( "Two" );
+        deck.addFirst( "Alpha" );
+        deck.addFirst( "Beta" );
+        deck.addLast( "Three" );
 //
 //        deck.addLast("A");
 //        deck.addLast("B");
@@ -184,24 +184,20 @@ public class Deque<Item> implements Iterable<Item>
 
 //        StdOut.println(deck.toString());
 //
-        StdOut.println(deck.removeLast());
-        StdOut.println(deck.removeLast());
-        StdOut.println(deck.removeLast());
-        StdOut.println(deck.removeLast());
-        StdOut.println(deck.removeLast());
-        StdOut.println(deck.removeLast());
-        StdOut.println("\n");
+        StdOut.println( deck.removeLast() );
+        StdOut.println( deck.removeLast() );
+        StdOut.println( deck.removeLast() );
+        StdOut.println( deck.removeLast() );
+        StdOut.println( deck.removeLast() );
+        StdOut.println( deck.removeLast() );
+        StdOut.println( "\n" );
 //        StdOut.println(deck.removeLast());
 //        StdOut.println(deck.removeLast());
 //        StdOut.println(deck.removeLast());
 
 
-        StdOut.println(deck.toString());
-        StdOut.println(deck.isEmpty());
-        StdOut.println(deck.size());
-
-
+        StdOut.println( deck.toString() );
+        StdOut.println( deck.isEmpty() );
+        StdOut.println( deck.size() );
     }
-
-
 }
