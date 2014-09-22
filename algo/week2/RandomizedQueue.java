@@ -1,21 +1,25 @@
-package algo.week2;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import edu.princeton.cs.introcs.StdOut;
-import edu.princeton.cs.introcs.StdRandom;
-
 public class RandomizedQueue<Item> implements Iterable<Item>
 {
+    private static final int INITIAL_SIZE = 1;
 
-    private class QueueIterator implements Iterator<Item>
+    /******************/
+    private class RandomQIterator implements Iterator<Item>
     {
-        private Node current = _first;
+        int[] rand_bag;
+        int   counter;
+
+        private RandomQIterator()
+        {
+            rand_bag = createShuffleBag();
+            counter = 0;
+        }
 
         public boolean hasNext()
         {
-            return current != null;
+            return counter < rand_bag.length;
         }
 
         public void remove()
@@ -25,131 +29,166 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 
         public Item next()
         {
-            Item item = current.item;
-            current = current.next;
-            return item;
+            if ( counter >= rand_bag.length ) {
+                throw new NoSuchElementException();
+            }
+
+            return mStack[ rand_bag[ counter++ ] ];
         }
+
+        private int[] createShuffleBag()
+        {
+            int[] rand_order = new int[ size() ];
+
+            for ( int i = 0; i < size(); i++ ) {
+                rand_order[ i ] = i;
+            }
+
+            StdRandom.shuffle( rand_order );
+
+//            for ( int i = 0; i < size(); i++ ) {
+//                StdRandom.
+//                int pos_b = StdRandom.uniform( 0, size() );
+//                // swap
+//                int tmp = rand_order[ pos_b ];
+//                rand_order[ pos_b ] = rand_order[ i ];
+//                rand_order[ i ] = tmp;
+//            }
+
+            return rand_order;
+        }
+
     }
 
-    private class Node
-    {
-        Node next, prev;
-        Item item;
-    }
+    /*****************/
 
-    private Node _first;
-    private int  _count;
+    private Item[] mStack;
 
+    private int mStackPtr;
 
-    /******************************************************************/
-    // construct an empty randomized queue
+    /**********************************************************************/
+    // construct an empty deque
     public RandomizedQueue()
     {
-        _count = 0;
-        _first = null;
+        mStack = (Item[]) new Object[ INITIAL_SIZE ];
     }
 
-    /******************************************************************/
-    // is the queue empty?
+    /**********************************************************************/
+    // is the deque empty?
     public boolean isEmpty()
     {
-        return _count == 0;
+        return mStackPtr < 1;
     }
 
-    /******************************************************************/
-    // return the number of items on the queue
+    /**********************************************************************/
+    // return the number of items on the deque
     public int size()
     {
-        return _count;
+        return mStackPtr;
     }
 
-    /******************************************************************/
-    // add the item
-    public void enqueue( Item item )
-    {
-        Node n = new Node();
-        n.item = item;
-        n.next = _first;
-        n.prev = null;
-        if ( _first != null ) {
-            _first.prev = n;
-        }
-        _first = n;
-        _count++;
-
-    }
-
-    /******************************************************************/
-    // delete and return a random item
-    public Item dequeue()
-    {
-        Node n = getItemNode( StdRandom.uniform( 0, _count ) );
-        //Node n = getItemNode( 0 );
-
-
-        if ( n.next != null ) {
-            n.next.prev = n.prev;
-        }
-        if ( n.prev != null ) {
-            n.prev.next = n.next;
-        }
-
-        if ( _first == n ) {
-            _first = n.next;
-        }
-
-        _count--;
-
-        if ( _count == 0 ) {
-            _first = null;
-        }
-
-        return n.item;
-    }
-
-    /******************************************************************/
-    // return (but do not delete) a random item
-    public Item sample()
-    {
-        return getItemNode( StdRandom.uniform( 0, _count ) ).item;
-    }
-
-    /******************************************************************/
-    private Node getItemNode( int pos )
-    {
-        Node n = _first;
-        int i = 0;
-        while ( n != null ) {
-            if ( i == pos ) {
-                return n;
-            }
-            i++;
-            n = n.next;
-        }
-        throw new NoSuchElementException();
-    }
-
-    /******************************************************************/
-    // return an independent iterator over items in random order
+    /**********************************************************************/
+    // return an iterator over items in order from front to end
     public Iterator<Item> iterator()
     {
-        return new QueueIterator();
+        return new RandomQIterator();
     }
 
+    /**********************************************************************/
+    public void enqueue( Item item )    // add the item
+    {
+        if ( item == null ) {
+            throw new NullPointerException();
+        }
+
+        if ( mStackPtr == mStack.length ) {
+            resizeStack( mStack.length * 2 );
+        }
+
+        mStack[ mStackPtr ] = item;
+
+        mStackPtr++;
+
+    }
+
+    /**********************************************************************/
+    private void resizeStack( int new_length )
+    {
+//        StdOut.println( "\n\nResizing to " + new_length );
+        Item[] new_stack = (Item[]) new Object[ new_length ];
+
+        for ( int i = 0; i < mStackPtr; i++ ) {
+            new_stack[ i ] = mStack[ i ];
+        }
+
+        mStack = new_stack;
+    }
+
+    /**********************************************************************/
+    public Item dequeue()   // delete and return a random item
+    {
+        if ( isEmpty() ) {
+            throw new NoSuchElementException();
+        }
+
+        int pos = StdRandom.uniform( 0, mStackPtr );
+
+        // swap random value to the end
+
+        mStackPtr--;
+
+        Item tmp = mStack[ mStackPtr ];
+
+        mStack[ mStackPtr ] = mStack[ pos ];
+        mStack[ pos ] = tmp;
+
+        Item it = mStack[ mStackPtr ];
+        mStack[ mStackPtr ] = null;
+
+
+//        int pos = StdRandom.uniform( 0, mStackPtr );
+//        Item item = mStack[ pos ];
+//
+//
+//        while ( pos < mStackPtr - 1 ) {
+//            mStack[ pos ] = mStack[ pos + 1 ];
+//            pos++;
+//        }
+//
+//
+//        mStack[ pos ] = null;
+//
+
+        if ( mStackPtr > 3 ) {
+            if ( mStackPtr == mStack.length / 4 ) {
+                resizeStack( mStack.length / 2 );
+            }
+        }
+
+        return it;
+
+    }
+
+    /**********************************************************************/
+    public Item sample()    // return (but do not delete) a random item
+    {
+        if ( isEmpty() ) {
+            throw new NoSuchElementException();
+        }
+        return mStack[ StdRandom.uniform( 0, mStackPtr ) ];
+    }
+
+    /**********************************************************************/
 //    @Override
 //    public String toString()
 //    {
-//        String out = "---------------------\n";
-//        Node n = _first;
-//        while ( n != null ) {
-//            out += "[ME: " + n.hashCode()
-//                   + "\tPREV: " + ( n.prev == null ? "null" : n.prev.hashCode() )
-//                   + "\tNEXT: " + ( n.next == null ? "null" : n.next.hashCode() )
-//                   + "\tVAL: " + n.item + "]\n";
-//            n = n.next;
-//        }
-//        return out;
+//        return "RandomizedQueue{" +
+//               "mStackPtr=" + mStackPtr +
+//               ", mStack.length=" + mStack.length +
+//               ", mStack=" + Arrays.toString( mStack ) +
+//               '}';
 //    }
+
 
     /******************************************************************/
     /******************************************************************/
@@ -157,21 +196,6 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 
     public static void main( String[] args )
     {
-        RandomizedQueue<String> rand = new RandomizedQueue<String>();
-
-        rand.enqueue( "ZER0" );
-        rand.enqueue( "1NE" );
-        rand.enqueue( "2WO" );
-        rand.enqueue( "THR3E" );
-        rand.enqueue( "4OUR" );
-        rand.enqueue( "5IVE" );
-        rand.enqueue( "S6X" );
-        rand.enqueue( "SE7EN" );
-        rand.enqueue( "EI8HT" );
-        rand.enqueue( "9INE" );
-
-        while ( !rand.isEmpty() ) {
-            StdOut.println( rand.dequeue() );
-        }
     }
+
 }
